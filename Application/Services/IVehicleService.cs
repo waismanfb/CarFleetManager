@@ -10,9 +10,11 @@ namespace Application.Services
 {
     public interface IVehicleService : IVehicleRepository
     {
-        //IEnumerable<VehicleEntity> GetVehicles();
+        IEnumerable<VehicleEntity> GetAllVehicles();
 
         void AddVehicle(VehicleEntity vehicle);
+
+
 
     }
 }

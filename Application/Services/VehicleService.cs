@@ -21,5 +21,15 @@ namespace Application.Services
         {
             _vehicleRepository.AddVehicle(vehicle);
         }
+
+        public IEnumerable<VehicleEntity> GetAllVehicles()
+        {
+            return _vehicleRepository.GetAllVehicles();
+        }
+
+        public IEnumerable<VehicleEntity> GetAllVehicles(string plate)
+        {
+            return _vehicleRepository.GetAllVehicles(plate);
+        }
     }
 }

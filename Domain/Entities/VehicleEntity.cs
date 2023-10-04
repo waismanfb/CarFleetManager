@@ -18,6 +18,11 @@ namespace Domain.Entities
             IsRented = isRented;
         }
 
+        public VehicleEntity()
+        {
+
+        }
+
         public int Id { get; private set; }
         [Required]
         public string Plate { get; set; }
@@ -27,6 +32,6 @@ namespace Domain.Entities
         public DateTime RegistrationDate { get; set; }
         [Required]
         public bool IsRented { get; set; }
-        public List<RentalEventEntity>? RentalEvents { get; set; }
+        public List<RentalEventEntity> RentalEvents { get; set; }
     }
 }

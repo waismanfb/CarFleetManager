@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace WebApi.Controllers
 {
@@ -18,20 +19,6 @@ namespace WebApi.Controllers
             _vehicleRepository = vehicleRepository;
         }
 
-        //[HttpGet]
-        /*public IActionResult GetAllVehicles()
-        {
-            try
-            {
-                var vehicles = _vehicleService.GetVehicles();
-                return Ok(vehicles);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if needed
-                return StatusCode(500, "Internal server error");
-            }
-        }*/
 
         [HttpPost("AddVehicle")]
         public IActionResult AddVehicle([FromBody] VehicleEntity vehicle)
@@ -43,10 +30,57 @@ namespace WebApi.Controllers
             }
             catch (Exception e)
             {
-                // Log the exception if needed
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet("GetAllVehiclesByModel/{model}")]
+        public ActionResult<IEnumerable<VehicleEntity>> GetAllVehiclesByModel(VehicleTypeEnum model)
+        {
+            try
+            {
+                IEnumerable<VehicleEntity> validVehicles = _vehicleRepository.GetAllVehicles().Where(v => v.Model == model);
+                return Ok(validVehicles);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("GetAllVehiclesByPlate/{plate}")]
+        public ActionResult<IEnumerable<VehicleEntity>> GetAllVehiclesByPlate(string plate)
+        {
+            try
+            {
+                IEnumerable<VehicleEntity> validVehicles = _vehicleRepository.GetAllVehicles(plate).Where(v => v.Plate == plate);
+                return Ok(validVehicles);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("GetAllVehiclesByStatus/{isRented}")]
+        public ActionResult<IEnumerable<VehicleEntity>> GetAllVehiclesByPlate(bool isRented)
+        {
+            if (isRented == null)
+                return BadRequest();
+
+            try
+            {
+                IEnumerable<VehicleEntity> validVehicles = _vehicleRepository.GetAllVehicles().Where(v => v.IsRented == isRented);
+                return Ok(validVehicles);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+
+        }
+
+
 
     }
 }
