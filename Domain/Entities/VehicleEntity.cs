@@ -1,37 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
     public class VehicleEntity
     {
-        public VehicleEntity(string plate, VehicleTypeEnum model, DateTime registrationDate, bool isRented)
-        {
-            Plate = plate;
-            Model = model;
-            RegistrationDate = registrationDate;
-            IsRented = isRented;
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public VehicleEntity() { }
 
-        public VehicleEntity()
-        {
-
-        }
-
-        public int Id { get; private set; }
+        /// <summary>   
+        /// 
+        /// </summary>
         [Required]
         public string Plate { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [Required]
-        public VehicleTypeEnum Model { get; set; }
+        public VehicleModelEnum Model { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [Required]
+
         public DateTime RegistrationDate { get; set; }
-        [Required]
-        public bool IsRented { get; set; }
-        public List<RentalEventEntity> RentalEvents { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public RentalEventEntity RentalEvents { get; set; }
     }
 }
