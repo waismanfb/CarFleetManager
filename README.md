@@ -20,7 +20,7 @@ Once you have the necessary tools, follow these steps to start working with the 
    - Open the project by selecting the solution file.
 
 3. **Run the Project:**
-   - Build and run the project to see it in action.
+   - Build and run the WebApi project.
 
 4. **Installing Dependencies:**
    - The project relies on Dapper and XUnit.
@@ -89,5 +89,5 @@ SELECT
 FROM
     Vehicle V
 INNER JOIN
-    RentalEvent R ON V.Plate = R.VehiclePlate; ```
+    RentalEvent R ON V.Plate = R.VehiclePlate; 
 
