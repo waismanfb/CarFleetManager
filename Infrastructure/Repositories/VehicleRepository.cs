@@ -2,22 +2,14 @@
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
     public class VehicleRepository : IVehicleRepository
     {
         private readonly IDbContext _dbContext;
-        private Dictionary<String, VehicleEntity> vehiclesDictionary = new Dictionary<String, VehicleEntity>();
-        private Dictionary<String, VehicleEntity> vehicleDictionary = new Dictionary<String, VehicleEntity>();
+        private Dictionary<string, VehicleEntity> vehiclesDictionary = new Dictionary<String, VehicleEntity>();
+        private Dictionary<string, VehicleEntity> vehicleDictionary = new Dictionary<String, VehicleEntity>();
 
         public VehicleRepository(IDbContext dbContext)
         {
@@ -69,10 +61,10 @@ namespace Infrastructure.Repositories
         }
 
         /// <summary>
-        /// Add vehicle
+        /// Add a vehicle to the VehicleEntity collection.
         /// </summary>
-        /// <param name="vehicle">Vehicle</param>
-        /// <exception cref="ArgumentException">Argument exception</exception>
+        /// <param name="vehicle">VehicleEntity to add.</param>
+        /// <exception cref="ArgumentException">Thrown when the VehicleEntity does not meet validation requirements.</exception>
         public void AddVehicle(VehicleEntity vehicle)
         {
             ValidateVehicle(vehicle);
@@ -204,6 +196,12 @@ namespace Infrastructure.Repositories
 
         }
 
+        /// <summary>
+        /// Gets all Vehicles with a specific plate and event type.
+        /// </summary>
+        /// <param name="plate">The plate number of the VehicleEntity to get.</param>
+        /// <param name="eventType">The event type to filter by.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that match the specified plate number and event type.</returns>
         public IEnumerable<VehicleEntity> GetVehiclesByPlateAndEventType(string plate, EventTypeEnum eventType)
         {
             ValidatePlate(plate);
@@ -213,6 +211,11 @@ namespace Infrastructure.Repositories
             return GetAllVehicles("Plate = @Plate AND EventType = @EventType", new { Plate = plate, EventType = eventType });
         }
 
+        /// <summary>
+        /// Gets Vehicles that can be removed from the repository.
+        /// </summary>
+        /// <param name="plate">An optional plate number to exclude from the list of vehicles to remove.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that can be removed from the repository.</returns>
         public IEnumerable<VehicleEntity> GetVehiclesAvaliableForRemoving(string plate)
         {
             ValidatePlate(plate);
@@ -222,6 +225,12 @@ namespace Infrastructure.Repositories
 
         }
 
+        /// <summary>
+        /// Updates the EventType of a VehicleEntity.
+        /// </summary>
+        /// <param name="plate">The plate number of the VehicleEntity to update.</param>
+        /// <param name="eventType">The EventTypeEnum value to update to.</param>
+        /// <param name="newEventType">The new EventTypeEnum value to replace the old value with.</param>
         public void UpdateEventType(string plate, EventTypeEnum eventType, EventTypeEnum newEventType)
         {
             IEnumerable<VehicleEntity> vehicleEntity = GetVehiclesByPlateAndEventType(plate, eventType);
@@ -241,6 +250,10 @@ namespace Infrastructure.Repositories
             connection.Execute(query, new { newEventType, plate });
         }
 
+        /// <summary>
+        /// Removes a VehicleEntity from the repository.
+        /// </summary>
+        /// <param name="plate">The plate number of the VehicleEntity to remove.</param>
         public void RemoveVehicle(string plate)
         {
             ValidatePlate(plate);
@@ -268,19 +281,42 @@ namespace Infrastructure.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets all Vehicles of a specific model.
+        /// </summary>
+        /// <param name="model">Model of the Vehicles to get.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that match the specified model.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByModel(VehicleModelEnum model)
         {
             return GetAllVehicles("Model = @Model", new { Model = model });
         }
 
+        /// <summary>
+        /// Gets all Vehicles with a specific Event Type.
+        /// </summary>
+        /// <param name="eventType">The event type to filter by.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByEventType(EventTypeEnum eventType)
         {
             return GetAllVehicles("EventType = @EventType", new { EventType = eventType });
         }
+
+        /// <summary>
+        /// Gets all Rental events for a VehicleEntity.
+        /// </summary>
+        /// <param name="plate">Plate number of the vehicle to get events for.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type and plate number.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByPlate(string plate)
         {
             return GetAllVehicles("Plate = @Plate", new { Plate = plate });
         }
+
+        /// <summary>
+        /// Gets all Rental events for a VehicleEntity.
+        /// </summary>
+        /// <param name="plate">Plate number of the vehicle to get events for.</param>
+        /// <param name="orderByDescending">Whether or not to sort the events.</param>
+        /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type and plate number.</returns>
         public IEnumerable<VehicleEntity> GetEventsByPlate(string plate, bool orderByDescending = true)
         {
             return GetAllVehicles("Plate = @Plate", new { Plate = plate }, orderByDescending ? "r.EventDate DESC" : "r.EventDate ASC");
