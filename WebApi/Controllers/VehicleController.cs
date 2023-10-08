@@ -36,7 +36,7 @@ namespace WebApi.Controllers
             {
                 vehicle.RentalEvents = new RentalEventEntity(vehicle);
                 _vehicleRepository.AddVehicle(vehicle);
-                return Ok();
+                return Ok($"Vehicle with plate {vehicle.Plate} added successfully.");
             }
             catch (Exception e)
             {
@@ -111,7 +111,8 @@ namespace WebApi.Controllers
             try
             {
                 _vehicleRepository.UpdateEventType(plate, eventType, newEventType);
-                return Ok();
+                return Ok($"Event for vehicle with plate {plate} successfully updated from {eventType} to {newEventType}.");
+
             }
             catch (Exception e)
             {
@@ -126,18 +127,25 @@ namespace WebApi.Controllers
         [HttpDelete("RemoveVehicle/{plate}")]
         public IActionResult RemoveVehicle(string plate)
         {
-
-            IEnumerable<VehicleEntity> validVehicles = _vehicleRepository.GetVehiclesAvaliableForRemoving(plate);
-
-            if (validVehicles.Any())
+            try
             {
-                _vehicleRepository.RemoveVehicle(plate);
-                return Ok();
+                IEnumerable<VehicleEntity> validVehicles = _vehicleRepository.GetVehiclesAvaliableForRemoving(plate);
+
+                if (validVehicles.Any())
+                {
+                    _vehicleRepository.RemoveVehicle(plate);
+                    return Ok($"The vehicle with the plate {plate} was removed with success");
+                }
+                else
+                {
+                    return BadRequest("Could not proceed with the removal of this vehicle");
+                }
             }
-            else
+            catch (Exception e)
             {
-                return BadRequest("Could not proceed with the removal of this vehicle");
+                return StatusCode(500, "Could not proceed with the removal of this vehicle. " + e.Message);
             }
+
         }
 
         /// <summary>

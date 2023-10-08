@@ -25,9 +25,9 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        private bool ValidateVehicleType(VehicleEntity vehicle)
+        private bool ValidateVehicleModel(VehicleModelEnum model)
         {
-            if (!Enum.IsDefined(typeof(VehicleModelEnum), vehicle.Model))
+            if (!Enum.IsDefined(typeof(VehicleModelEnum), model))
                 throw new ArgumentException("Invalid vehicle model");
             return true;
         }
@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
 
         private void ValidateVehicle(VehicleEntity vehicle)
         {
-            ValidateVehicleType(vehicle);
+            ValidateVehicleModel(vehicle.Model);
             ValidateMercosulPattern(vehicle.Plate);
             ValidateRegistrationDate(vehicle.RegistrationDate);
         }
@@ -161,7 +161,7 @@ namespace Infrastructure.Repositories
             );
 
             if (result == null || !result.Any())
-                throw new Exception("No vehicles found.");
+                throw new Exception("Unfortunately, no vehicles fit the criteria you've specified.");
 
             return result.Distinct();
         }
@@ -247,7 +247,19 @@ namespace Infrastructure.Repositories
                 WHERE VehiclePlate = @Plate";
 
             using var connection = _dbContext.CreateConnection();
-            connection.Execute(query, new { newEventType, plate });
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                connection.Execute(query, new { newEventType, plate }, transaction: transaction);
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         /// <summary>
@@ -288,6 +300,8 @@ namespace Infrastructure.Repositories
         /// <returns>An IEnumerable of VehicleEntity objects that match the specified model.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByModel(VehicleModelEnum model)
         {
+            ValidateVehicleModel(model);
+
             return GetAllVehicles("Model = @Model", new { Model = model });
         }
 
@@ -298,6 +312,8 @@ namespace Infrastructure.Repositories
         /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByEventType(EventTypeEnum eventType)
         {
+            ValidateEventType(eventType);
+
             return GetAllVehicles("EventType = @EventType", new { EventType = eventType });
         }
 
@@ -308,6 +324,9 @@ namespace Infrastructure.Repositories
         /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type and plate number.</returns>
         public IEnumerable<VehicleEntity> GetAllVehiclesByPlate(string plate)
         {
+            ValidatePlate(plate);
+            ValidateMercosulPattern(plate);
+
             return GetAllVehicles("Plate = @Plate", new { Plate = plate });
         }
 
@@ -319,6 +338,9 @@ namespace Infrastructure.Repositories
         /// <returns>An IEnumerable of VehicleEntity objects that match the specified event type and plate number.</returns>
         public IEnumerable<VehicleEntity> GetEventsByPlate(string plate, bool orderByDescending = true)
         {
+            ValidatePlate(plate);
+            ValidateMercosulPattern(plate);
+
             return GetAllVehicles("Plate = @Plate", new { Plate = plate }, orderByDescending ? "r.EventDate DESC" : "r.EventDate ASC");
         }
     }

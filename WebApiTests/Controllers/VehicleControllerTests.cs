@@ -10,6 +10,9 @@ using Xunit;
 
 namespace WebApiTests.Controllers
 {
+    /// <summary>
+    /// Represents tests for the <see cref="VehicleController"/> class.
+    /// </summary>
     public class VehicleControllerTests
     {
         private readonly Mock<IVehicleService> _vehicleServiceMock = new Mock<IVehicleService>();
@@ -26,6 +29,9 @@ namespace WebApiTests.Controllers
             _vehicleController = new VehicleController(_vehicleServiceMock.Object, _vehicleRepositoryMock.Object);
         }
 
+        /// <summary>
+        /// Ensures that a valid vehicle returns an Ok result.
+        /// </summary>
         [Fact]
         public void AddVehicle_ValidVehicle_ReturnsOk()
         {
@@ -48,9 +54,12 @@ namespace WebApiTests.Controllers
             var result = _vehicleController.AddVehicle(vehicleEntity);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
+        /// <summary>
+        /// Ensures that an invalid vehicle returns a StatusCode 500.
+        /// </summary>
         [Fact]
         public void AddVehicle_InvalidVehicle_ReturnsStatusCode500()
         {
@@ -70,6 +79,9 @@ namespace WebApiTests.Controllers
             Assert.Equal(500, response.StatusCode);
         }
 
+        /// <summary>
+        /// Ensures that the GetAllVehiclesByModel method returns an Ok result.
+        /// </summary>
         [Fact]
         public void GetAllVehiclesByModel_Returns_OkResult()
         {
@@ -83,6 +95,9 @@ namespace WebApiTests.Controllers
             Assert.IsType<ActionResult<IEnumerable<VehicleEntity>>>(result);
         }
 
+        /// <summary>
+        /// Ensures that the GetAllVehiclesByPlate method returns an Ok result.
+        /// </summary>
         [Fact]
         public void GetAllVehiclesByPlate_Returns_OkResult()
         {
@@ -96,6 +111,9 @@ namespace WebApiTests.Controllers
             Assert.IsType<ActionResult<IEnumerable<VehicleEntity>>>(result);
         }
 
+        /// <summary>
+        /// Ensures that the GetAllVehiclesByEventType method returns an Ok result.
+        /// </summary>
         [Fact]
         public void GetAllVehiclesByEventType_Returns_OkResult()
         {
@@ -109,6 +127,9 @@ namespace WebApiTests.Controllers
             Assert.IsType<ActionResult<IEnumerable<VehicleEntity>>>(result);
         }
 
+        /// <summary>
+        /// Ensures that the UpdateEventType method returns an Ok result.
+        /// </summary>
         [Fact]
         public void UpdateEventType_Returns_OkResult()
         {
@@ -121,9 +142,12 @@ namespace WebApiTests.Controllers
             var result = _vehicleController.UpdateEventType(plate, eventType, newEventType);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
+        /// <summary>
+        /// Ensures that the RemoveVehicle method returns a BadRequestObjectResult when no vehicle is found.
+        /// </summary>
         [Fact]
         public void RemoveVehicle_Returns_BadRequestResult_When_No_Vehicle_Found()
         {
@@ -139,6 +163,9 @@ namespace WebApiTests.Controllers
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
+        /// <summary>
+        /// Ensures that the RemoveVehicle method returns an OkResult when a vehicle is found.
+        /// </summary>
         [Fact]
         public void RemoveVehicle_Returns_OkResult_When_Vehicle_Found()
         {
@@ -153,6 +180,10 @@ namespace WebApiTests.Controllers
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
         }
+
+        /// <summary>
+        /// Ensures that the GetEventsByPlate method returns an Ok result.
+        /// </summary>
         [Fact]
         public void GetEventsByPlate_Returns_OkResult()
         {
